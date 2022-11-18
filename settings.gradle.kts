@@ -11,5 +11,7 @@ pluginManagement {
 rootProject.name = "localhost-tools"
 
 include(
-    "localhost-dev-proxy:dev-proxy-manager"
+    "localhost-dev-proxy:dev-proxy-manager",
+    "localhost-dev-proxy:dev-proxy-lib",
+    "localhost-dev-proxy:dev-proxy-server-example"
 )
