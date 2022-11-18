@@ -4,19 +4,25 @@ import kotlinx.datetime.Clock
 import sh.quatre.localhost.dev.proxy.LocalDevServer
 import sh.quatre.localhost.dev.proxy.RunningDevServer
 import sh.quatre.localhost.dev.proxy.gen.EnvoyConfGenerator
+import sh.quatre.localhost.dev.proxy.gen.ServersIndexGenerator
 import java.nio.file.Path
 import java.nio.file.Paths
 
 class EnvoyProxyController(private val dir: Path = Paths.get("/tmp/localhost-dev-proxy")) {
     private val confDir = dir.resolve("envoy")
     private val confFilePath = confDir.resolve("envoy.yaml")
+    private val indexFilePath = confDir.resolve("default.html")
 
     private var initialized = false
     private var started = false
 
-    fun updateConf(conf: String) {
+    private val confGen = EnvoyConfGenerator()
+    private val indexGen = ServersIndexGenerator()
+
+    fun updateServers(servers: List<RunningDevServer>) {
         confDir.toFile().mkdirs()
-        confFilePath.toFile().writeText(conf)
+        confFilePath.toFile().writeText(confGen.generateToString(servers))
+        indexFilePath.toFile().writeText(indexGen.generateToString(servers))
 
         if (started) {
             refresh()
@@ -48,14 +54,13 @@ class EnvoyProxyController(private val dir: Path = Paths.get("/tmp/localhost-dev
 fun main() {
     val controller = EnvoyProxyController()
 
-    val conf = EnvoyConfGenerator().generateToString(
+    val servers =
         listOf(
             RunningDevServer(LocalDevServer("my-web-server"), 8000, Clock.System.now()),
             RunningDevServer(LocalDevServer("my-http2-server"), 8082, Clock.System.now())
         )
-    )
 
-    controller.updateConf(conf)
+    controller.updateServers(servers)
 
     controller.start()
 }
