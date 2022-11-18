@@ -4,6 +4,8 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
+import sh.quatre.localhost.dev.proxy.DevServerProtocol
+import sh.quatre.localhost.dev.proxy.DevServerProtocol.HTTP
 import sh.quatre.localhost.dev.proxy.LocalDevServer
 import sh.quatre.localhost.dev.proxy.RunningDevServer
 import strikt.api.expectThat
@@ -21,7 +23,7 @@ class DevProxyConfigStoreTest {
         val startedAt = Clock.System.now()
         val servers = listOf(
             runningDevServer("my-web-server", 8080, startedAt),
-            runningDevServer("my-other-server", 8081, startedAt)
+            runningDevServer("my-http2-server", 8081, startedAt, DevServerProtocol.HTTP_2)
         )
 
         store.save(servers)
@@ -29,8 +31,8 @@ class DevProxyConfigStoreTest {
         expectThat(file.toFile().exists()).isTrue()
         expectThat(file.toFile().readText()).isEqualTo(
             """
-                my-web-server${"\t"}8080${"\t"}$startedAt
-                my-other-server${"\t"}8081${"\t"}$startedAt
+                my-web-server${"\t"}HTTP${"\t"}8080${"\t"}$startedAt
+                my-http2-server${"\t"}HTTP_2${"\t"}8081${"\t"}$startedAt
             """.trimIndent()
         )
 
@@ -39,6 +41,6 @@ class DevProxyConfigStoreTest {
         expectThat(loadedServers).hasSize(servers.size).isEqualTo(servers)
     }
 
-    private fun runningDevServer(name: String, port: Int, startedAt: Instant) =
-        RunningDevServer(LocalDevServer(name), port, startedAt)
+    private fun runningDevServer(name: String, port: Int, startedAt: Instant, protocol: DevServerProtocol = HTTP) =
+        RunningDevServer(LocalDevServer(name, protocol), port, startedAt)
 }
