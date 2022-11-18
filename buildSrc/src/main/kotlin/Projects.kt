@@ -10,7 +10,6 @@ val Project.libs get() = the<org.gradle.accessors.dm.LibrariesForLibs>()
 fun Project.kotlinProject() {
     dependencies {
         "implementation"(kotlin("stdlib-jdk8"))
-        "implementation"(kotlin("reflect"))
         "implementation"(libs.kotlinx.datetime)
 
         "implementation"(libs.log4j.api)
