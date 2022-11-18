@@ -9,3 +9,7 @@ pluginManagement {
 }
 
 rootProject.name = "localhost-tools"
+
+include(
+    "localhost-dev-proxy:dev-proxy-manager"
+)
