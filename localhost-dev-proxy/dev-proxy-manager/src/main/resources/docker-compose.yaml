@@ -1,0 +1,16 @@
+version: "3"
+services:
+  front-envoy:
+    image: envoyproxy/envoy:v1.21-latest
+    container_name: front-envoy
+    expose:
+      - "9998"
+      - "9999"
+    ports:
+      - "9998:9998"
+      - "9999:9999"
+    volumes:
+      - ./envoy/envoy.yaml:/etc/envoy/envoy.yaml
+      - ./envoy/default.html:/etc/envoy/default.html
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
