@@ -1,0 +1,14 @@
+[versions]
+junit = "5.9.1"
+junit-platform = "1.9.1"
+kotlin = "1.6.21"
+kotlinx-coroutine = "1.7.20"
+log4j = "2.19.0"
+testcontainers = "1.17.5"
+
+[libraries]
+plugin-kotlin-core = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+
+[plugins]
+version-catalog-update = "nl.littlerobots.version-catalog-update:0.7.0"
+versions = "com.github.ben-manes.versions:0.43.0"
