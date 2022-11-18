@@ -13,7 +13,7 @@ class LocalDevProxyServer {
 }
 
 fun main() {
-    val port = System.getenv("DEV_PROXY_CONTROL_PORT")?.toIntOrNull() ?: 9998
+    val port = System.getenv("DEV_PROXY_CONTROL_PORT")?.toIntOrNull() ?: 9990
 
     LocalDevProxyServer().startAndAwait(port)
 }
