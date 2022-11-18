@@ -36,6 +36,7 @@ class EnvoyProxyController(private val dir: Path = Paths.get("/tmp/localhost-dev
     fun start() {
         init()
         "docker-compose --project-name localhost-dev-proxy up --detach".runCommand(dir.toFile())
+        started = true
     }
 
     private fun init() {
@@ -48,6 +49,7 @@ class EnvoyProxyController(private val dir: Path = Paths.get("/tmp/localhost-dev
 
     fun stop() {
         "docker-compose --project-name localhost-dev-proxy down".runCommand(dir.toFile())
+        started = false
     }
 }
 

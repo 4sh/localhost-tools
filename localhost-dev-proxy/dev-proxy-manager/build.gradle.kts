@@ -7,4 +7,6 @@ plugins {
 
 dependencies {
     implementation(libs.log4j.core)
+    implementation(libs.http4k.core)
+    implementation(libs.http4k.server.undertow)
 }

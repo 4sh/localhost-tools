@@ -1,4 +1,5 @@
 [versions]
+http4k = "4.34.0.4"
 junit = "5.9.1"
 junit-platform = "1.9.1"
 kotlin = "1.6.21"
@@ -7,6 +8,8 @@ log4j = "2.19.0"
 testcontainers = "1.17.5"
 
 [libraries]
+http4k-core = { module = "org.http4k:http4k-core", version.ref = "http4k" }
+http4k-server-undertow = { module = "org.http4k:http4k-server-undertow", version.ref = "http4k" }
 junit-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit" }
 junit-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit" }
 junit-params = { module = "org.junit.jupiter:junit-jupiter-params", version.ref = "junit" }
