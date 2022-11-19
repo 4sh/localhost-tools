@@ -36,3 +36,10 @@ fun Project.withTestSupportProject() {
         }
     }
 }
+
+fun Project.dockerRepository(): String {
+    val repositoryUrlPropertyName = "dockerRepositoryUrl"
+    return if (project.hasProperty(repositoryUrlPropertyName)) {
+        project.property(repositoryUrlPropertyName) as String
+    } else "europe-docker.pkg.dev/quatreapp/localhost-tools"
+}

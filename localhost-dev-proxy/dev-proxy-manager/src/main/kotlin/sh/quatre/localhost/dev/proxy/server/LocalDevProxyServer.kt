@@ -10,9 +10,8 @@ import java.nio.file.Paths
 import java.util.concurrent.atomic.AtomicInteger
 
 class LocalDevProxyServer {
-    val dir = Paths.get("/tmp/localhost-dev-proxy")
-    val controller = EnvoyProxyController(dir)
-    val store = DevProxyConfigStore(dir.resolve("conf"))
+    val controller = EnvoyProxyController()
+    val store = DevProxyConfigStore(Paths.get("/etc/localhost-server-manager/conf"))
 
     fun updateServers(servers: List<RunningDevServer>) {
         store.save(servers)

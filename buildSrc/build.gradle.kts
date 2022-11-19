@@ -26,4 +26,5 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach 
 
 dependencies {
     implementation(libs.plugin.kotlin.core)
+    implementation(libs.plugin.palantir.docker)
 }

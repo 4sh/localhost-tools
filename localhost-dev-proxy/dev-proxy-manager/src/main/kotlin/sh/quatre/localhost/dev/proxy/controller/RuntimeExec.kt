@@ -1,28 +1,23 @@
 package sh.quatre.localhost.dev.proxy.controller
 
 import org.apache.logging.log4j.LogManager
-import java.io.File
 import java.io.IOException
 import java.nio.file.Path
-import java.util.concurrent.TimeUnit
 
 private val logger = LogManager.getLogger("exec")
 
-fun String.runCommand(workingDir: File) {
-    try {
+fun String.runDaemon(): Process? {
+    return try {
         logger.info("$ `$this`")
         val parts = this.split("\\s".toRegex())
         val proc = ProcessBuilder(*parts.toTypedArray())
-            .directory(workingDir)
-            .redirectOutput(ProcessBuilder.Redirect.PIPE)
-            .redirectError(ProcessBuilder.Redirect.PIPE)
+            .inheritIO()
             .start()
 
-        proc.waitFor(60, TimeUnit.MINUTES)
-        val output = proc.inputStream.bufferedReader().readText()
-        logger.info(output)
+        proc!!
     } catch (e: IOException) {
         logger.error("error executing ${this}\n->${e.message}", e)
+        null
     }
 }
 
