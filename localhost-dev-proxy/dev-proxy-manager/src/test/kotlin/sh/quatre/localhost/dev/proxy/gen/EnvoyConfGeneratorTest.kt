@@ -102,7 +102,7 @@ private val expectedEnvoyProxy = """
                     direct_response:
                       status: 200
                       body:
-                        filename: "/etc/envoy/default.html"
+                        filename: "/etc/localhost-server-manager/default.html"
               http_filters:
               - name: envoy.filters.http.router
                 typed_config:
