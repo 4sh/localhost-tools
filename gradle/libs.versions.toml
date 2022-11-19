@@ -25,6 +25,7 @@ log4j-api = { module = "org.apache.logging.log4j:log4j-api", version.ref = "log4
 log4j-core = { module = "org.apache.logging.log4j:log4j-core", version.ref = "log4j" }
 mockk = "io.mockk:mockk:1.13.2"
 plugin-kotlin-core = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+plugin-palantir-docker = "com.palantir.gradle.docker:gradle-docker:0.33.0"
 strikt-core = "io.strikt:strikt-core:0.34.1"
 
 [plugins]

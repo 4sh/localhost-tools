@@ -7,9 +7,13 @@ will assign a free port to them and make them accessible by name, always on the 
 
 ## Usage
 
-You can download it from the releases, and then launch it to run a small server on your localhost.
+We provide a docker image, so you only need docker to run it, like this:
+```shell
+docker run -p 9990:9990 -p 9999:9999 europe-docker.pkg.dev/quatreapp/localhost-tools/localhost-server-manager:1.0.0
+```
+We recommend that you start it at startup.
 
-In your apps, you can register against the server with a simple HTTP call:
+Then, in your apps, you can register against the server with a simple HTTP call:
 ```
 POST http://localhost:9990/local-servers/your-server-name
 ```
@@ -29,16 +33,11 @@ fun main() {
 }
 ```
 
-## Pre requisites
-
-- docker
-- a jvm
-
 ## Status
 
 This tool is still in very early stage. It has been developed over a night in the "Nuit de la R&D" event.
 
-The release is not packaged yet, and there is no error management - so it works when it works, otherwise...
+There is no error management, and ports assignment is very basic - so it works when it works, otherwise...
 
 Therefore contributions are welcome!
 
@@ -46,6 +45,7 @@ Therefore contributions are welcome!
 
 The main logic can be found in the `localhost-dev-proxy/dev-proxy-manager` module.
 
-It is developed in Kotlin, and we plan to release the server as a binary with graalvm compilation (not done yet).
+It is developed in Kotlin, but the library provided is pure java, and you can easily use it in any language 
+supporting to send an HTTP POST.
 
-It relies on Envoy for the reverse proxy. Envoy is managed with docker-compose, and configured and reloaded by the server.
+It relies on Envoy for the reverse proxy. Envoy is packaged in the same docker image, and managed as a simple process.

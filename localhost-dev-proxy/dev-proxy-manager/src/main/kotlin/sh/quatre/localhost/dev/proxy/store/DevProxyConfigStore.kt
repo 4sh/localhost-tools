@@ -15,6 +15,7 @@ class DevProxyConfigStore(val source: Path) {
             }
             .joinToString("\n")
             .also {
+                source.parent.toFile().mkdirs()
                 source.toFile().writeText(it)
                 logger.info("update conf at $source - ${servers.size} servers")
             }

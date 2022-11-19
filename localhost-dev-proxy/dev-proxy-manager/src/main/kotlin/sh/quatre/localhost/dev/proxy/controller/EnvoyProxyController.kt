@@ -7,20 +7,22 @@ import sh.quatre.localhost.dev.proxy.gen.EnvoyConfGenerator
 import sh.quatre.localhost.dev.proxy.gen.ServersIndexGenerator
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.util.concurrent.TimeUnit
+import kotlin.io.path.absolutePathString
 
-class EnvoyProxyController(private val dir: Path = Paths.get("/tmp/localhost-dev-proxy")) {
-    private val confDir = dir.resolve("envoy")
-    private val confFilePath = confDir.resolve("envoy.yaml")
-    private val indexFilePath = confDir.resolve("default.html")
+class EnvoyProxyController(private val dir: Path = Paths.get("/etc/localhost-server-manager")) {
+    private val envoyConfDir = dir
+    private val confFilePath = envoyConfDir.resolve("envoy.yaml")
+    private val indexFilePath = envoyConfDir.resolve("default.html")
 
-    private var initialized = false
-    private var started = false
+    private val started get() = process != null
+    private var process: Process? = null
 
     private val confGen = EnvoyConfGenerator()
     private val indexGen = ServersIndexGenerator()
 
     fun updateServers(servers: List<RunningDevServer>) {
-        confDir.toFile().mkdirs()
+        envoyConfDir.toFile().mkdirs()
         confFilePath.toFile().writeText(confGen.generateToString(servers))
         indexFilePath.toFile().writeText(indexGen.generateToString(servers))
 
@@ -30,26 +32,18 @@ class EnvoyProxyController(private val dir: Path = Paths.get("/tmp/localhost-dev
     }
 
     fun refresh() {
-        "docker-compose --project-name localhost-dev-proxy restart".runCommand(dir.toFile())
+        stop()
+        start()
     }
 
     fun start() {
-        init()
-        "docker-compose --project-name localhost-dev-proxy up --detach".runCommand(dir.toFile())
-        started = true
-    }
-
-    private fun init() {
-        if (!initialized) {
-            "docker-compose.yaml".copyResourceTo(dir)
-            confDir.toFile().mkdirs()
-            initialized = true
-        }
+        process = "envoy -c ${confFilePath.absolutePathString()}".runDaemon()
     }
 
     fun stop() {
-        "docker-compose --project-name localhost-dev-proxy down".runCommand(dir.toFile())
-        started = false
+        process?.destroy()
+        process?.waitFor(10, TimeUnit.SECONDS)
+        process = null
     }
 }
 
