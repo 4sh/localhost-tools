@@ -20,7 +20,8 @@ POST http://localhost:9990/local-servers/your-server-name
 This will return the assigned port in the body, and then you can start your server on this port, and it will be 
 accessible at http://your-server-name.localtest.me:9999/
 
-If you run a java server, you can use the very lightweight `dev-proxy-lib` library to register your server.
+If you run a java server, you can use the very lightweight `dev-proxy-lib` library to register your server 
+(pure java, non dependency).
 
 Example in kotlin with htt4k:
 ```kotlin
@@ -32,6 +33,9 @@ fun main() {
     handler.asServer(Undertow(port)).start()
 }
 ```
+
+You can have a look at the code of this lib, it's very simple:
+[source](localhost-dev-proxy/dev-proxy-lib/src/main/java/sh/quatre/localhost/dev/proxy/api/LocalDevServer.java)
 
 ## Status
 
