@@ -29,7 +29,7 @@ class ServersIndexGenerator {
           <footer class="footer">
             <div class="content has-text-centered">
               <p>
-                <strong>Dev Proxy</strong> powered by <a href="https://www.envoyproxy.io/">Envoy</a>, made with ❤ by <a href="https://github/com/xhanin">Xavier Hanin</a>. 
+                <strong>Dev Proxy</strong> powered by <a href="https://www.envoyproxy.io/">Envoy</a>, made with ❤ by <a href="https://github.com/xhanin">Xavier Hanin</a>. 
               </p>
             </div>
           </footer>
