@@ -5,6 +5,7 @@ import org.apache.logging.log4j.LogManager
 import sh.quatre.localhost.dev.proxy.LocalDevServer
 import sh.quatre.localhost.dev.proxy.RunningDevServer
 import sh.quatre.localhost.dev.proxy.controller.EnvoyProxyController
+import sh.quatre.localhost.dev.proxy.gen.ServersIndexGenerator
 import sh.quatre.localhost.dev.proxy.store.DevProxyConfigStore
 import java.nio.file.Paths
 import java.util.concurrent.atomic.AtomicInteger
@@ -12,6 +13,7 @@ import java.util.concurrent.atomic.AtomicInteger
 class LocalDevProxyServer {
     val controller = EnvoyProxyController()
     val store = DevProxyConfigStore(Paths.get("/etc/localhost-server-manager/conf"))
+    val index = ServersIndexGenerator()
 
     fun updateServers(servers: List<RunningDevServer>) {
         store.save(servers)
@@ -53,6 +55,8 @@ class LocalDevProxyServer {
                     servers.removeIf { it.server.name == name }
                     updateServers(servers)
                 }
+
+                override fun serveServersList() = index.generateToString(servers)
             }
         )
     }
