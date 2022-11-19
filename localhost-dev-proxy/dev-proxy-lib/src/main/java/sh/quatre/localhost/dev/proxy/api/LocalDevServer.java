@@ -1,6 +1,7 @@
 package sh.quatre.localhost.dev.proxy.api;
 
 import java.io.IOException;
+import java.net.ConnectException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.http.HttpClient;
@@ -31,15 +32,33 @@ import java.net.http.HttpResponse;
  * handler.asServer(Undertow(port)).start()
  * }
  * </code>
+ *
+ * <b>Warning:</b> this is not intended to be used in production, and make sure to properly deal with exceptions that may be
+ * raised
  */
 public class LocalDevServer {
     private static final int localDevProxyControllerPort = 9990;
 
+    /**
+     * Registers a server to local server manager, and get the assigned available port on which the server must listen.
+     *
+     * @param name the name of the server. It will be reachable at <pre>http://[name].localtest.me:9999/</pre>
+     * @return the port on which the server must listen
+     * @throws LocalServerManagerNotAvailableException if local server manager can't be contacted
+     * @throws RuntimeException in case of other problems
+     */
     public static int registerAndGetPort(String name) {
         Runtime.getRuntime().addShutdownHook(new ServerStop(name));
         return Integer.parseInt(httpForServer("POST", name));
     }
 
+    /**
+     * Signal that the server registered with given name has been stopped.
+     *
+     * Note that this is automatically called on jvm shutdown.
+     *
+     * @param name the name of the server that has been stopped
+     */
     public static void serverStopped(String name) {
         httpForServer("DELETE", name);
     }
@@ -61,6 +80,8 @@ public class LocalDevServer {
             HttpResponse<String> response = HttpClient.newHttpClient()
                     .send(request, HttpResponse.BodyHandlers.ofString());
             return response.body();
+        } catch (ConnectException e) {
+            throw new LocalServerManagerNotAvailableException(e);
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
@@ -74,7 +95,18 @@ public class LocalDevServer {
         }
 
         public void run() {
-            serverStopped(name);
+            try {
+                serverStopped(name);
+            } catch (Exception e) {
+                System.err.println("unregistering server from local dev server manager failed: " + e.getMessage());
+            }
+
+        }
+    }
+
+    public static class LocalServerManagerNotAvailableException extends RuntimeException {
+        LocalServerManagerNotAvailableException(Exception cause) {
+            super(cause);
         }
     }
 }

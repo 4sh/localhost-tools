@@ -13,6 +13,10 @@ import org.http4k.server.asServer
 class LocalDevProxyHttpServer {
     fun start(port: Int, callbacks: ServerCallbacks) {
         val app = routes(
+            "/" bind Method.GET to {
+                Response(OK).header("Content-Type", "text/html; charset=utf-8")
+                    .body(callbacks.serveServersList())
+            },
             "local-servers/{name}" bind Method.POST to {
                 it.path("name")?.let(callbacks::onServerStarting)?.let { port -> Response(OK).body(port.toString()) }
                     ?: Response(NOT_FOUND)
@@ -29,4 +33,6 @@ class LocalDevProxyHttpServer {
 interface ServerCallbacks {
     fun onServerStarting(name: String): Int
     fun onServerStopped(name: String)
+
+    fun serveServersList(): String
 }

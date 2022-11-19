@@ -13,7 +13,8 @@ private val logger = LogManager.getLogger("example")
 fun main() {
     val handler = { request: Request -> Response(OK).body("Hello, I'm ${request.header("host")}!") }
 
-    val port = LocalDevServer.registerAndGetPort("my-http4k-server")
+    // get port from PORT environment variable if defined (for production), or get it from local dev server manager
+    val port = System.getenv("PORT")?.toIntOrNull() ?: LocalDevServer.registerAndGetPort("my-http4k-server")
     logger.info("starting server on port $port")
     handler.asServer(Undertow(port)).start()
 }

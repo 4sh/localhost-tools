@@ -1,32 +1,30 @@
 package sh.quatre.localhost.dev.proxy.server
 
-import kotlinx.datetime.Clock
 import org.apache.logging.log4j.LogManager
 import sh.quatre.localhost.dev.proxy.LocalDevServer
-import sh.quatre.localhost.dev.proxy.RunningDevServer
 import sh.quatre.localhost.dev.proxy.controller.EnvoyProxyController
+import sh.quatre.localhost.dev.proxy.gen.ServersIndexGenerator
 import sh.quatre.localhost.dev.proxy.store.DevProxyConfigStore
 import java.nio.file.Paths
-import java.util.concurrent.atomic.AtomicInteger
 
 class LocalDevProxyServer {
     val controller = EnvoyProxyController()
     val store = DevProxyConfigStore(Paths.get("/etc/localhost-server-manager/conf"))
+    val index = ServersIndexGenerator()
+    val manager = LocalDevServersManager(store.load())
 
-    fun updateServers(servers: List<RunningDevServer>) {
-        store.save(servers)
-        controller.updateServers(servers)
+    fun updateServers() {
+        store.save(manager.servers)
+        controller.updateServers(manager.servers)
     }
 
     fun startAndAwait(port: Int) {
         logger.info("starting local dev proxy server on port $port")
-        val servers = store.load().toMutableList()
-        val ports = AtomicInteger(servers.map { it.port }.maxOrNull() ?: 10000)
-        if (!servers.isEmpty()) {
-            logger.info("loaded servers: $servers")
+        if (!manager.servers.isEmpty()) {
+            logger.info("loaded servers: ${manager.servers}")
         }
 
-        controller.updateServers(servers)
+        controller.updateServers(manager.servers)
         controller.start()
 
         LocalDevProxyHttpServer().start(
@@ -35,24 +33,21 @@ class LocalDevProxyServer {
                 override fun onServerStarting(name: String): Int {
                     logger.info("server starting: $name")
                     return (
-                        servers.find { it.server.name == name }
-                            ?: RunningDevServer(
-                                server = LocalDevServer(name),
-                                port = ports.incrementAndGet(),
-                                startedAt = Clock.System.now()
-                            ).also {
+                        manager.servers.find { it.server.name == name }
+                            ?: manager.register(LocalDevServer(name)).also {
                                 logger.info("new server starting: $it")
-                                servers.add(it)
-                                updateServers(servers)
+                                updateServers()
                             }
                         ).port
                 }
 
                 override fun onServerStopped(name: String) {
                     logger.info("server stopped: $name")
-                    servers.removeIf { it.server.name == name }
-                    updateServers(servers)
+                    manager.stopped(name)
+                    updateServers()
                 }
+
+                override fun serveServersList() = index.generateToString(manager.servers)
             }
         )
     }
