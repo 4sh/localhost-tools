@@ -9,7 +9,7 @@ will assign a free port to them and make them accessible by name, always on the 
 
 We provide a docker image, so you only need docker to run it, like this:
 ```shell
-docker run -p 9990:9990 -p 9999:9999 europe-docker.pkg.dev/quatreapp/localhost-tools/localhost-server-manager:1.0.0
+docker run -p 9990:9990 -p 9999:9999 xhanin/localhost-tools:1.0.0
 ```
 We recommend that you start it at startup.
 
